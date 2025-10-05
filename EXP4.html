@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Registration Form Validation</title>
+  <style>
+    :root {
+      --primary: #2c5aa0;
+      --primary-light: #e8f0fe;
+      --primary-dark: #1e3d6f;
+      --success: #28a745;
+      --error: #dc3545;
+      --text: #333;
+      --light-text: #6c757d;
+      --background: #f8f9fa;
+      --white: #ffffff;
+      --border: #dee2e6;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', 'Roboto', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--background);
+      color: var(--text);
+      line-height: 1.6;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 500px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    h1 {
+      color: var(--primary);
+      margin-bottom: 8px;
+      font-size: 28px;
+      font-weight: 600;
+      letter-spacing: -0.5px;
+    }
+
+    .subtitle {
+      color: var(--light-text);
+      font-size: 16px;
+      font-weight: 400;
+    }
+
+    .form-container {
+      background: var(--white);
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      border: 1px solid var(--border);
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+      color: var(--text);
+      font-size: 15px;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 12px 15px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 16px;
+      transition: all 0.2s;
+      background-color: #fff;
+    }
+
+    input:focus, textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(44, 90, 160, 0.1);
+    }
+
+    textarea {
+      min-height: 100px;
+      resize: vertical;
+      font-family: inherit;
+    }
+
+    .error {
+      color: var(--error);
+      font-size: 13px;
+      margin-top: 5px;
+      display: block;
+      min-height: 20px;
+      font-weight: 500;
+    }
+
+    .password-constraints {
+      font-size: 13px;
+      color: var(--light-text);
+      margin-top: 8px;
+      line-height: 1.4;
+      background-color: #f8f9fa;
+      padding: 10px 12px;
+      border-radius: 4px;
+      border-left: 3px solid var(--primary-light);
+    }
+
+    .constraint {
+      display: flex;
+      align-items: center;
+      margin-bottom: 4px;
+    }
+
+    .constraint-icon {
+      margin-right: 8px;
+      font-size: 12px;
+      width: 14px;
+      text-align: center;
+    }
+
+    .constraint.valid {
+      color: var(--success);
+    }
+
+    button {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 14px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 600;
+      width: 100%;
+      transition: background 0.2s;
+      margin-top: 10px;
+      letter-spacing: 0.3px;
+    }
+
+    button:hover {
+      background: var(--primary-dark);
+    }
+
+    .form-row {
+      display: flex;
+      gap: 15px;
+    }
+
+    .form-row .form-group {
+      flex: 1;
+    }
+
+    .footer {
+      text-align: center;
+      margin-top: 30px;
+      color: var(--light-text);
+      font-size: 14px;
+    }
+
+    .footer a {
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .footer a:hover {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 600px) {
+      .form-row {
+        flex-direction: column;
+        gap: 0;
+      }
+      
+      body {
+        padding: 15px;
+      }
+      
+      .form-container {
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Create Your Account</h1>
+      <p class="subtitle">Join our community by filling out the form below</p>
+    </header>
+
+    <div class="form-container">
+      <form id="regForm" onsubmit="return validateForm()">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="fname">First Name</label>
+            <input type="text" id="fname" placeholder="Enter your first name">
+            <span id="fnameError" class="error"></span>
+          </div>
+
+          <div class="form-group">
+            <label for="lname">Last Name</label>
+            <input type="text" id="lname" placeholder="Enter your last name">
+            <span id="lnameError" class="error"></span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" placeholder="Create a secure password" onkeyup="validatePasswordConstraints()">
+          <div class="password-constraints">
+            <div class="constraint" id="lengthConstraint">
+              <span class="constraint-icon">•</span> At least 6 characters
+            </div>
+            <div class="constraint" id="uppercaseConstraint">
+              <span class="constraint-icon">•</span> At least one uppercase letter
+            </div>
+            <div class="constraint" id="lowercaseConstraint">
+              <span class="constraint-icon">•</span> At least one lowercase letter
+            </div>
+            <div class="constraint" id="numberConstraint">
+              <span class="constraint-icon">•</span> At least one number
+            </div>
+            <div class="constraint" id="specialConstraint">
+              <span class="constraint-icon">•</span> At least one special character
+            </div>
+          </div>
+          <span id="passwordError" class="error"></span>
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email Address</label>
+          <input type="text" id="email" placeholder="name@example.com">
+          <span id="emailError" class="error"></span>
+        </div>
+
+        <div class="form-group">
+          <label for="mobile">Mobile Number</label>
+          <input type="text" id="mobile" placeholder="10-digit mobile number">
+          <span id="mobileError" class="error"></span>
+        </div>
+
+        <div class="form-group">
+          <label for="address">Address</label>
+          <textarea id="address" placeholder="Enter your complete address"></textarea>
+          <span id="addressError" class="error"></span>
+        </div>
+
+        <button type="submit">Register Now</button>
+      </form>
+    </div>
+
+    <div class="footer">
+      <p>Already have an account? <a href="#">Sign in here</a></p>
+    </div>
+  </div>
+
+  <script>
+    function validateForm() {
+      let valid = true;
+
+      // Clear previous errors
+      document.getElementById("fnameError").innerHTML = "";
+      document.getElementById("lnameError").innerHTML = "";
+      document.getElementById("passwordError").innerHTML = "";
+      document.getElementById("emailError").innerHTML = "";
+      document.getElementById("mobileError").innerHTML = "";
+      document.getElementById("addressError").innerHTML = "";
+
+      // First Name validation
+      let fname = document.getElementById("fname").value.trim();
+      if (!/^[A-Za-z]+$/.test(fname) || fname.length < 3) {
+        document.getElementById("fnameError").innerHTML = "Only alphabets, min 3 chars.";
+        valid = false;
+      }
+
+      // Last Name validation
+      let lname = document.getElementById("lname").value.trim();
+      if (lname === "") {
+        document.getElementById("lnameError").innerHTML = "Last name cannot be empty.";
+        valid = false;
+      }
+
+      // Password validation
+      let password = document.getElementById("password").value;
+      if (!isPasswordValid(password)) {
+        document.getElementById("passwordError").innerHTML = "Password does not meet all requirements.";
+        valid = false;
+      }
+
+      // Email validation
+      let email = document.getElementById("email").value.trim();
+      let emailPattern = /^[a-zA-Z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/;
+      if (!emailPattern.test(email)) {
+        document.getElementById("emailError").innerHTML = "Invalid email format (e.g., name@domain.com).";
+        valid = false;
+      }
+
+      // Mobile validation
+      let mobile = document.getElementById("mobile").value.trim();
+      if (!/^\d{10}$/.test(mobile)) {
+        document.getElementById("mobileError").innerHTML = "Must be exactly 10 digits.";
+        valid = false;
+      }
+
+      // Address validation
+      let address = document.getElementById("address").value.trim();
+      if (address === "") {
+        document.getElementById("addressError").innerHTML = "Address cannot be empty.";
+        valid = false;
+      }
+
+      return valid;
+    }
+
+    function isPasswordValid(password) {
+      // Check minimum length
+      if (password.length < 6) return false;
+      
+      // Check for at least one uppercase letter
+      if (!/[A-Z]/.test(password)) return false;
+      
+      // Check for at least one lowercase letter
+      if (!/[a-z]/.test(password)) return false;
+      
+      // Check for at least one number
+      if (!/\d/.test(password)) return false;
+      
+      // Check for at least one special character
+      if (!/[@$!%*?&]/.test(password)) return false;
+      
+      return true;
+    }
+
+    function validatePasswordConstraints() {
+      const password = document.getElementById("password").value;
+      
+      // Update constraint indicators
+      document.getElementById("lengthConstraint").classList.toggle("valid", password.length >= 6);
+      document.getElementById("uppercaseConstraint").classList.toggle("valid", /[A-Z]/.test(password));
+      document.getElementById("lowercaseConstraint").classList.toggle("valid", /[a-z]/.test(password));
+      document.getElementById("numberConstraint").classList.toggle("valid", /\d/.test(password));
+      document.getElementById("specialConstraint").classList.toggle("valid", /[@$!%*?&]/.test(password));
+    }
+  </script>
+</body>
+</html>
